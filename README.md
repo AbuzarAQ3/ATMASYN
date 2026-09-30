@@ -1,144 +1,523 @@
-# ParakhAI: AI-Powered Legal Metrology Compliance System
+# ATMASYN
 
-*Smart India Hackathon (SIH) 2026 | Problem Statement ID: SIH26034*
+## Adaptive Atmospheric Forecast Synthesis
 
-[![SIH 2026](https://img.shields.io/badge/SIH-2026-blue)](https://sih.gov.in) [![Python](https://img.shields.io/badge/Python-3.10+-yellow)](https://www.python.org/) [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/) [![Django](https://img.shields.io/badge/Django-4.2-green)](https://www.djangoproject.com/)
+ATMASYN is a web-based prototype for **hybrid AI–NWP multi-model forecast blending**.
 
----
+The system is designed to combine forecasts from multiple numerical weather prediction (NWP) sources and produce a context-aware blended forecast based on factors such as **weather regime, forecast lead time, region, and model performance history**.
 
-## About the Project
-*ParakhAI* is an intelligent, AI-driven software ecosystem designed to automate the inspection and compliance verification of packaged commodities under the *Legal Metrology (Packaged Commodities) Rules, 2011*. 
+The goal is not to replace numerical weather prediction. It is to provide a transparent synthesis layer that can compare model forecasts, estimate confidence, and expose where the blended result is more or less reliable.
 
-By combining advanced OCR, Computer Vision, and a deterministic rule engine, Parakh empowers Legal Metrology Inspectors, Manufacturers, and Regulatory Authorities to detect label violations, geo-tag fraud, and generate court-admissible digital reports in seconds—shifting from a 10-minute manual process to a 15-second automated workflow.
-
----
-
-## Problem Statement
-*SIH26034:* Software System to check compliance of Packaged Commodities under Legal Metrology (Packaged Commodities) Rules, 2011 by scanning products, images, and labels.
+> **Smart India Hackathon 2026 — Problem Statement SIH26081**
+> Hybrid AI-NWP Multi-Model Forecast Blending System
+> Theme: Disaster Management
 
 ---
 
-## Key Features
+## Project Status
 
-### Core AI & Compliance
-*   *Intelligent Label Analysis (ParakhAI):* Uses OCR + Custom AI to understand product labels, converting unstructured package images into structured data.
-*   *Rule-Based Compliance Engine:* Automatically applies Legal Metrology rules, amendments, and category-specific requirements to detect missing or incorrect declarations.
-*   *Hybrid OCR Engine:* Combines *Tesseract 5.0* (for offline/edge processing) and *Google Vision API* (for complex/cloud processing) to achieve 95%+ text extraction accuracy.
+ATMASYN is being developed as an SIH 2026 prototype.
 
-### Inspector-Centric Workflow
-*   *Seamless Flow:* Capture  Verify ➔ Review ➔ Report from a single unified platform.
-*   *Geo-Tagging of Violations:* Captures exact GPS coordinates alongside photographic evidence to identify geographic fraud hotspots.
-*   *Offline-First Architecture:* Inspectors can store evidence locally in remote areas and auto-sync when connectivity returns.
+The current frontend began as a deterministic demonstration of the intended workflow. It uses controlled/demo data rather than claiming live operational NWP connectivity or validated forecast improvement.
 
-### Security & Advanced Features
-*   *Blockchain Audit Trail:* Generates tamper-proof, hash-locked PDF reports (SHA-256) for court-admissible evidence.
-*   *Role-Based Access Control (RBAC):* Tailored dashboards for Inspectors, Manufacturers, Importers, and Admins.
-*   *Smart Route Planner:* Analytics dashboard showing Green/Red pins for regional compliance trends.
-*   *Manufacturer Self-Audit Mode:* Allows FMCG companies to pre-validate labels before mass production.
+The project is being developed toward a full:
+
+```text
+React
+   ↓
+Django + Django REST Framework
+   ↓
+PostgreSQL
+```
+
+web application with the forecast-blending and verification pipeline handled on the backend/ML side.
+
+---
+
+## The Problem
+
+Different weather models can produce different forecasts for the same region and lead time.
+
+One model may perform better in a particular weather regime, while another may perform better at a different forecast horizon or location.
+
+A simple average does not account for these differences.
+
+ATMASYN explores a more adaptive approach:
+
+```text
+Multiple NWP Forecasts
+        ↓
+Common representation
+        ↓
+Context + historical model skill
+        ↓
+Adaptive model weighting
+        ↓
+Blended forecast
+        ↓
+Confidence / uncertainty
+        ↓
+Verification against observations
+```
+
+The system is intended to help users understand not only **what the blended forecast is**, but also **how much confidence should be placed in it**.
+
+---
+
+## Core Objectives
+
+ATMASYN focuses on five core capabilities:
+
+### 1. Multi-model forecast ingestion
+
+Bring forecasts from multiple NWP sources into a common workflow so that they can be compared and combined.
+
+### 2. Context-aware model weighting
+
+Estimate which model deserves greater influence based on contextual factors such as:
+
+* Region
+* Forecast lead time
+* Weather regime
+* Forecast variable
+* Historical model performance
+
+### 3. Ensemble forecast generation
+
+Produce a single blended forecast from the contributing models instead of presenting users with disconnected model outputs.
+
+### 4. Confidence and uncertainty
+
+Expose forecast confidence using model agreement, historical verification, and other available indicators rather than presenting every blended prediction as equally reliable.
+
+### 5. Verification
+
+Compare forecasts with observations and maintain verification records so that model performance can be measured over time.
+
+---
+
+## Main Features
+
+The current product direction includes:
+
+* Regional forecast selection
+* Weather-regime context
+* Lead-time aware blending
+* Model-to-model comparison
+* Adaptive model weights
+* Blended forecast visualization
+* Confidence / uncertainty display
+* Forecast verification views
+* Extreme-weather indicators
+* Role-oriented dashboards
+* Historical performance analysis
+* Human review for low-confidence or critical cases
+
+The exact operational feature set will evolve as the backend and forecasting pipeline are implemented.
+
+---
+
+## Current Frontend Prototype
+
+The frontend prototype demonstrates the product workflow with deterministic data.
+
+It currently includes:
+
+* Forecast and regional selection
+* Model comparison
+* Deterministic adaptive weights
+* Confidence/spread visualization
+* Interactive regional maps
+* Verification views
+* Workflow/source views
+* Alert-oriented presentation
+
+The frontend deliberately does **not** claim that these demo values represent live NWP forecasts or scientifically validated forecast improvement.
+
+The current integration boundary is designed so that the local demo data can later be replaced by backend APIs.
+
+---
+
+## High-Level Architecture
+
+The intended application architecture is deliberately kept straightforward:
+
+```text
+┌──────────────────────────────┐
+│           React              │
+│   Dashboard / Maps / Charts  │
+└──────────────┬───────────────┘
+               │ HTTPS / REST
+               ▼
+┌──────────────────────────────┐
+│      Django + DRF            │
+│                              │
+│ Forecast APIs                │
+│ Model / Run Management       │
+│ User & Access Control        │
+│ Verification Records         │
+│ Alerts / Reports             │
+│ Processing Orchestration     │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│         PostgreSQL            │
+│                              │
+│ Forecast metadata             │
+│ Model performance             │
+│ Verification results          │
+│ Regions / configurations      │
+│ Users / audit records         │
+└──────────────────────────────┘
+
+          ┌───────────────────┐
+          │ Forecast / ML     │
+          │ Processing        │
+          │                   │
+          │ Regridding        │
+          │ Weight calculation│
+          │ Blending          │
+          │ Verification      │
+          └───────────────────┘
+```
+
+The exact processing/deployment implementation may evolve, but the core application remains a **React + Django + PostgreSQL** system.
 
 ---
 
 ## Technology Stack
 
-| Category | Technologies Used |
-| :--- | :--- |
-| *Frontend* | React.js, Tailwind CSS |
-| *Core Backend* | Django, Django REST Framework (DRF) |
-| *AI & ML* | Python, PyTorch, Tesseract 5.0, Google Vision API, YOLOv8 |
-| *Databases* | PostgreSQL (Cloud) |
-| *Task Queue* | Redis, Celery (For async AI processing) |
-| *Cloud & DevOps* | AWS S3 (Object Storage), Docker, GitHub Actions |
+### Frontend
+
+* React
+* Tailwind CSS
+* React-based mapping and data visualization libraries
+
+### Backend
+
+* Python
+* Django
+* Django REST Framework
+
+### Database
+
+* PostgreSQL
+
+### Forecast / ML Layer
+
+Python-based numerical, data-processing and machine-learning tooling is used around the forecasting workflow.
+
+The specific model and processing libraries are intentionally kept modular so that the project can change implementation without coupling the application architecture to one ML framework.
 
 ---
 
-## System Architecture & Workflow
+## Forecast-Blending Workflow
 
-Parakh utilizes a *Microservices Architecture* to ensure high scalability and zero UI lag during heavy AI processing:
+A simplified ATMASYN run can be represented as:
 
-1.  *Data Capture:* Inspector uploads an image.
-2.  *Core Routing:* Django backend authenticates the user and stores the raw image in AWS S3.
-3.  *Async Processing:* The task is pushed to a *Redis/Celery* queue.
-4.  *Decision Engine:* Extracted data is validated against the Legal Metrology Rules 2011 database.
-5.  *Storage & Delivery:* Results are saved to PostgreSQL, and a hash-locked PDF report is generated and pushed to the frontend.
+```text
+1. Obtain model forecasts
+          ↓
+2. Validate input data
+          ↓
+3. Normalize / align forecasts
+          ↓
+4. Determine contextual factors
+   - region
+   - lead time
+   - weather regime
+   - variable
+          ↓
+5. Estimate model weights
+          ↓
+6. Generate blended forecast
+          ↓
+7. Estimate confidence / uncertainty
+          ↓
+8. Store result and metadata
+          ↓
+9. Compare against observations
+          ↓
+10. Update model-performance history
+```
+
+The important design principle is that **forecast generation and forecast verification are separate concerns**.
+
+A model should not be considered useful merely because it produced a plausible-looking map.
 
 ---
 
-##  Installation & Local Setup
+## Verification
 
-### Prerequisites
-*   Node.js (v16+)
-*   Python (v3.10+)
-*   PostgreSQL
+Verification is a central part of the system.
 
-### 1. Clone the Repository
+ATMASYN is intended to maintain historical records of:
 
-'''bash
+* Individual model forecasts
+* Blended forecasts
+* Corresponding observations
+* Forecast lead time
+* Region
+* Weather regime/context
+* Verification metrics
 
-git clone https://github.com/abuzaraq3/parakhAI.git
+This allows the system to answer questions such as:
 
-cd parakhAI
-'''
+> Which model performed better for this region and lead time?
 
-### 2. Backend Setup (Django)
+> Did the blended forecast outperform the individual inputs?
 
-bash
+> When do the models strongly disagree?
 
-cd backend
+> When should the system reduce confidence and request human review?
 
-python -m venv venv
+---
 
-linux: source venv/bin/activate | Windows: venv\Scripts\activate
+## Human-in-the-Loop Design
 
-pip install -r requirements.txt
+Forecast blending should not hide uncertainty behind a single number.
 
-python manage.py makemigrations
-python manage.py migrate
+For low-confidence or operationally sensitive cases, ATMASYN is designed to support a human review path.
 
-python manage.py runserver
-'''
+```text
+Forecast
+   ↓
+Confidence check
+   ├── High confidence → publish
+   │
+   └── Low confidence → review
+                           ↓
+                    Forecaster feedback
+                           ↓
+                    Stored for analysis
+```
 
+This creates a practical boundary between automated synthesis and expert judgement.
 
-### 3. Frontend Setup (React/Next.js)
+---
 
-'''bash
+## Data Sources
 
-cd frontend
+The project is designed to work with multiple NWP and observation sources.
 
+Potential sources referenced during the project include:
+
+* NOAA GFS / NOMADS
+* ECMWF Open Data
+* IMD data services
+* Reanalysis and observational datasets such as ERA5
+
+Actual provider usage, historical availability, licensing constraints, and ingestion mechanisms will be validated during implementation rather than assumed from the presentation layer.
+
+---
+
+## API Direction
+
+The frontend was designed around a backend integration boundary.
+
+Illustrative resources include:
+
+```text
+GET /api/forecast/<region>
+GET /api/weights/<region>
+GET /api/verification/<region>
+GET /api/alerts/<region>
+```
+
+The final API contract may differ as the backend is implemented.
+
+The backend remains responsible for:
+
+* validation
+* persistence
+* authorization
+* forecast/run management
+* verification records
+* processing orchestration
+* auditability
+
+The frontend should remain primarily responsible for presentation and user interaction.
+
+---
+
+## What ATMASYN Does Not Claim
+
+The project intentionally avoids presenting the prototype as an operational weather service.
+
+At the current stage, ATMASYN does **not** claim:
+
+* operational nationwide forecasting
+* guaranteed forecast accuracy
+* validated improvement across all regions and seasons
+* production-grade live NWP ingestion
+* continuous autonomous self-learning
+* replacement of official meteorological forecasting systems
+
+These are future engineering or validation goals, not current capabilities.
+
+---
+
+## Why Multi-Model Blending?
+
+A single NWP model does not necessarily perform equally well:
+
+* across all regions,
+* at every lead time,
+* under every weather regime,
+* or for every meteorological variable.
+
+A multi-model approach can instead use the information that each model is strongest at.
+
+Conceptually:
+
+```text
+Model A ─┐
+Model B ─┼──> Context-aware weighting ──> Blended forecast
+Model C ─┘
+```
+
+The purpose of ATMASYN is therefore not simply to display more forecasts.
+
+It is to create a **measurable, auditable synthesis layer** between raw model outputs and end-user decision support.
+
+---
+
+## Project Structure
+
+The repository structure may evolve during development. Conceptually, it is organized around:
+
+```text
+ATMASYN/
+├── frontend/        # React application
+├── backend/         # Django + DRF application
+├── forecasting/     # Forecast ingestion / processing / blending
+├── data/            # Local development / sample data where applicable
+├── docs/             # Technical and research documentation
+└── README.md
+```
+
+Implementation-specific directories should be added only when they correspond to an actual maintained module.
+
+---
+
+## Development Principles
+
+ATMASYN follows a few practical engineering principles:
+
+### Keep the science measurable
+
+Every improvement in the blending system should be evaluated against an explicit baseline.
+
+### Keep the backend responsible for state
+
+The frontend should not become the source of truth for forecasts, weights, verification data, or user actions.
+
+### Separate research code from application code
+
+Forecast experiments should not turn the Django codebase into an untestable collection of notebooks and scripts.
+
+### Prefer explainable outputs
+
+Users should be able to understand why a forecast has high or low confidence.
+
+### Build the MVP before the infrastructure
+
+A working forecast/verification loop is more valuable than an architecture diagram containing ten technologies that the team does not actually need.
+
+---
+
+## Local Development
+
+### Frontend
+
+Requirements:
+
+* Node.js 20+
+* npm or pnpm
+
+```bash
 npm install
-
 npm run dev
-'''
+```
+
+The development server prints the local URL.
+
+For verification:
+
+```bash
+npm run typecheck
+npm run build
+npm run serve
+```
+
+The production frontend bundle is generated in `dist/`.
+
+### Backend
+
+The backend will run as a standard Django application with Django REST Framework and PostgreSQL.
+
+The exact environment variables, migration commands, processing workers, and service configuration should be documented in the backend README once those components are finalized.
 
 ---
 
-## Impact & Benefits
+## Deployment
 
-*   *Social:* Protects 1.4 billion Indians from underweight, overpriced, and expired goods. Eliminates "short-weighing" fraud.
-*   *Economic:* Reduces inspection costs. Prevents annual consumer revenue leakage.
-*   *Regulatory:* Increases inspection capacity by exponentially. Ensures unbiased, consistent enforcement.
-*   *Environmental:* *100% paperless workflow*, eliminating millions of physical challans and manual logbooks annually.
+The application is intended to be container/deployment friendly.
+
+A typical deployment will consist of:
+
+```text
+React frontend
+      +
+Django / DRF backend
+      +
+PostgreSQL
+```
+
+Deployment details such as the hosting provider, reverse proxy, background-worker configuration, object storage, and monitoring stack are implementation decisions and should only be documented here once they are actually part of the working system.
+
+---
+
+## Research Direction
+
+Possible future extensions include:
+
+* More NWP sources
+* Better regime detection
+* Adaptive lead-time weighting
+* Probabilistic forecast blending
+* Calibration
+* More rigorous uncertainty estimation
+* Extended historical verification
+* Region-specific model skill profiles
+* Additional meteorological variables
+* API/SDK access for external consumers
+
+These extensions depend on data availability and validation results.
 
 ---
 
-## Research & References
+## References
 
-1.  *Legal Metrology Act, 2009* & *Packaged Commodities Rules, 2011* - Govt. of India
-2.  *Department of Consumer Affairs Annual Report 2024-25*
-3.  Mittal, R., & Garg, A. (2020). "Text extraction using OCR: A Systematic Review." IEEE ICIRCA. *DOI:* 10.1109/ICIRCA48905.2020.9183326
-4.  Tejaswi, L.S., et al. (2024). "Automating Nutritional Claim Verification: The Role of OCR and Machine Learning." IEEE. *DOI:* 10.1109/ICICNIS64247.2024.10823177
-5.  Ahmed, I., et al. (2024). "AI-Enhanced Visual Inspection Systems for Robust Detection of Product Packaging Defects." IEEE UEMCON. *DOI:* 10.1109/UEMCON62879.2024.10754674
+The project research includes material from:
 
----
+* India Meteorological Department (IMD)
+* ECMWF Open Data
+* NOAA GFS / NOMADS
+* ERA5 / Copernicus Climate Data Store
+* WMO guidance on multi-model ensemble forecasting
+* Peer-reviewed work on multi-model weather forecasting and ensemble calibration
 
-## Team Pramaan
-
-| Name | Role | GitHub | LinkedIn |
-| :--- | :--- | :--- | :--- |
-| *[Ali]* | Team Lead / ML Engineer | [@Alishad01](https://github.com/Alishad01) | [@username](#) |
-| *[Shahabuzar]* | Backend Lead | [@AbuzarAQ3](https://github.com/AbuzarAQ3) | [@username](#) |
-| *[Owais]* | Frontend Lead | [@Owaisraza-02qalad](https://github.com/anshikatiwari064-droid) | [@username](#) |
-| *[Aarna]* | Frontend Developer | [@aarnatiwariwhs-blip](https://github.com/aarnatiwariwhs-blip) | [@username](#) |
-| *[Mansi]* | Backend Developer | [@mansi-sharma123](https://github.com/mansi-sharma123) | [@username](#) |
-| *[Anshika]* | R&D / AI Researcher | [@anshikatiwari064-droid](https://github.com/anshikatiwari064-droid) | [@username](#) |
+Research citations and dataset attribution should be maintained alongside the forecasting methodology as the project evolves.
 
 ---
+
+## Status
+
+**ATMASYN — Adaptive Atmospheric Forecast Synthesis**
+
+**Smart India Hackathon 2026**
+**PS: SIH26081**
+
+Built by **Team Pramaan**.
